@@ -1,0 +1,388 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+* {
+  font-family: 'Poppins', Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', Arial, sans-serif;
+  background: #121e1e;
+  color: #ffffff;
+  overflow-x: hidden;
+  overflow-y: auto;
+  cursor: default;
+  scrollbar-width: thin;
+  scrollbar-color: #1e4141 transparent;
+  position: relative;
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: -999;
+  pointer-events: none;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #1e4141;
+  border-radius: 10px;
+  border: 3px solid #121e1e;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #2d5c5c;
+}
+
+::selection {
+  background-color: #216060;
+  color: white;
+}
+
+#loadingbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  background-color: #1f3434;
+  transition: width 0.3s ease, opacity 0.5s ease;
+  opacity: 0;
+  z-index: 99999;
+}
+
+#historyModal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(12px);
+  background: rgba(18, 30, 30, 0.85);
+  color: #eee;
+  z-index: 9999;
+  transition: all 0.3s ease;
+}
+
+#historyModal.show {
+  display: flex;
+}
+
+#historyContent {
+  background: rgba(27, 45, 45, 0.95);
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  text-align: left;
+  border: 1px solid #1f3434;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+}
+
+#historyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #1f3434;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+#historyActions button {
+  margin-left: 10px;
+  background: #162424;
+  border: 1px solid #1f3434;
+  color: #ccc;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#historyActions button:hover {
+  background: #1f3434;
+  color: #fff;
+}
+
+#historyList {
+  margin-top: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #1e4141 transparent;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #162424;
+  margin: 6px 0;
+  padding: 10px;
+  border-radius: 8px;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.history-item:hover {
+  background: #1b2d2d;
+  border-left-color: #1f3434;
+}
+
+.history-item-info {
+  flex: 1;
+}
+
+.history-item-title {
+  font-weight: 500;
+  color: #fff;
+  font-size: 0.95em;
+}
+
+.history-item-url {
+  color: #888;
+  font-size: 0.85em;
+}
+
+.history-item-delete {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 5px;
+}
+
+.history-item-delete:hover {
+  color: #fc6363;
+}
+#historyPasswordModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 30, 30, 0.9);
+  backdrop-filter: blur(15px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  transition: all 0.3s ease;
+}
+
+#historyPasswordModal.show {
+  display: flex;
+}
+
+#historyPasswordBox {
+  background: rgba(27, 45, 45, 0.95);
+  padding: 25px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 350px;
+  text-align: center;
+  border: 1px solid #1f3434;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+}
+
+#historyPasswordBox h3 {
+  margin-bottom: 15px;
+  color: #e0e0e0;
+}
+
+#historyPasswordBox input {
+  width: 80%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #1f3434;
+  background: #162424;
+  color: white;
+  outline: none;
+  margin-top: 10px;
+  transition: border-color 0.2s ease;
+}
+
+#historyPasswordBox input:focus {
+  border-color: #2d5c5c;
+}
+
+#historyPasswordMessage {
+  color: #999;
+  font-size: 0.8em;
+  margin-top: 10px;
+}
+
+.passwordButtons {
+  margin-top: 15px;
+}
+
+.passwordButtons button {
+  margin: 5px;
+  background: #162424;
+  border: 1px solid #1f3434;
+  padding: 8px 16px;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.passwordButtons button:hover {
+  background: #1f3434;
+}
+
+#gooei {
+  position: fixed;
+  inset: 0;
+  backdrop-filter: blur(12px);
+  background: rgba(18, 30, 30, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 9998;
+}
+
+#gooei.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+#uv-form {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 20px;
+}
+
+#teacher-setup-dialogs-container-searchbar {
+  width: 80vw;
+  max-width: 700px;
+  padding: 15px 25px;
+  font-size: 1.1em;
+  border: 1px solid #1f3434;
+  border-radius: 30px;
+  background: #162424;
+  color: white;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+#teacher-setup-dialogs-container-searchbar:focus {
+  border-color: #2d5c5c;
+  background: #1c2f2f;
+  box-shadow: 0 0 10px rgba(45, 92, 92, 0.3);
+}
+
+#teacher-setup-dialogs-container-searchbar::placeholder {
+  color: #888;
+}
+#footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(27, 45, 45, 0.85);
+  border-top: 1px solid #1f3434;
+  padding: 8px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  backdrop-filter: blur(10px);
+  z-index: 9998;
+}
+
+#footer .logo {
+  height: 32px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+#footer .logo:hover {
+  transform: scale(1.1);
+}
+
+#footer input {
+  background: #162424;
+  border: 1px solid #1f3434;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  width: 50%;
+  outline: none;
+  transition: border-color 0.2s ease;
+  cursor: pointer;
+}
+
+#footer input:focus {
+  border-color: #2d5c5c;
+  cursor: text;
+}
+
+#footer .right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#footer .headericons {
+  height: 28px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  filter: invert(1) grayscale(100%);
+}
+
+#footer .headericons:hover {
+  transform: scale(1.1);
+  filter: invert(1) grayscale(0%);
+}
+#iframeid {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 50px);
+  border: none;
+  z-index: 1;
+}
+@media (max-width: 768px) {
+  #footer input {
+    width: 40%;
+  }
+
+  #teacher-setup-dialogs-container-searchbar {
+    width: 90vw;
+    font-size: 1em;
+    padding: 12px 20px;
+  }
+
+  #historyContent {
+    width: 95%;
+  }
+
+  #footer .headericons {
+    height: 24px;
+  }
+}

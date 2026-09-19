@@ -1,0 +1,289 @@
+ @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+        :root {
+            --primary-rgb: 100, 200, 180;
+            --primary-color: rgb(var(--primary-rgb));
+            --base-opacity: 0.65;
+            --bg-dark: #1b3030c3;
+            --bg-panel: #192d2da1;
+            --border-light: rgba(255, 255, 255, 0.313);
+            --border-dark: rgba(255, 255, 255, 0.081);
+            --handle-size: 48px;
+        }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.15s ease-out; 
+        }
+        body {
+            background: var(--bg-dark);
+            overflow: hidden;
+            touch-action: none;
+        }
+        #game { 
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .controls { 
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 999999;
+        }
+        .btn {
+            position: absolute;
+            pointer-events: auto;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid var(--border-light);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 50%;
+            opacity: var(--base-opacity); 
+            transition: transform 0.1s, opacity 0.3s, background 0.1s, border-color 0.1s;
+        }
+        .btn.active {
+            background: rgba(var(--primary-rgb), 0.35);
+            border-color: rgba(var(--primary-rgb), 0.6);
+        }
+        .btn.drag-mode {
+            border: 2px dashed rgba(var(--primary-rgb), 0.7);
+            cursor: move;
+        }
+        .joy, .camera { 
+            bottom: 30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-light);
+            opacity: var(--base-opacity);
+            border-radius: 50%;
+        }
+        .joy { left: 30px; }
+        .camera { right: 180px; }
+        .joy-stick, .camera-stick {
+            position: absolute;
+            width: var(--handle-size);
+            height: var(--handle-size);
+            background: rgba(var(--primary-rgb), 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: none; 
+        }
+        .joy.active .joy-stick, .camera.active .camera-stick {
+            background: rgba(var(--primary-rgb), 0.6);
+        }
+        .a { bottom: 50px; right: 70px; width: 60px; height: 60px; }
+        .b { bottom: 120px; right: 30px; width: 60px; height: 60px; }
+        .lclick { bottom: 190px; right: 80px; width: 50px; height: 50px; font-size: 11px; }
+        .rclick { bottom: 190px; right: 25px; width: 50px; height: 50px; font-size: 11px; }
+        .esc { top: 30px; left: 30px; width: 55px; height: 55px; font-size: 12px; }
+        .settings-icon {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid var(--border-light);
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000002;
+        }
+        .settings-icon:hover {
+            background: rgba(var(--primary-rgb), 0.2);
+        }
+        .panel {
+            position: fixed;
+            top: 0;
+            right: -360px;
+            width: 360px;
+            height: 100%;
+            background: var(--bg-panel);
+            color: #ffffff;
+            padding: 0;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 1000001;
+            border-left: 1px solid rgba(var(--primary-rgb), 0.2);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(var(--primary-rgb), 0.3) transparent;
+        }
+        .panel::-webkit-scrollbar { width: 6px; }
+        .panel::-webkit-scrollbar-track { background: transparent; }
+        .panel::-webkit-scrollbar-thumb { background: rgba(var(--primary-rgb), 0.3); border-radius: 3px; }
+        .panel.open { right: 0; }
+        .panel-head {
+            padding: 24px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border-dark);
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    
+        .close-btn {
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .close-btn:hover {
+            color: white;
+        }
+        .section {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .section-title {
+            font-size: 11px;
+            color: rgba(var(--primary-rgb), 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+        .slider-wrap { margin-bottom: 16px; }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 400;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            outline: none;
+            appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: rgba(var(--primary-rgb), 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: rgba(var(--primary-rgb), 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 13px;
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: rgba(var(--primary-rgb), 0.5);
+        }
+        select option { background: var(--bg-panel); }
+        .btn-action {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+        .btn-action:hover {
+            background: rgba(var(--primary-rgb), 0.15);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+        .btn-action.primary {
+            background: rgba(var(--primary-rgb), 0.15);
+            border-color: rgba(var(--primary-rgb), 0.3);
+        }
+        .btn-action.primary:hover {
+            background: rgba(var(--primary-rgb), 0.25);
+        }
+        .btn-action.danger {
+            background: rgba(255, 100, 100, 0.1);
+            border-color: rgba(255, 100, 100, 0.3);
+        }
+        .btn-action.danger:hover {
+            background: rgba(255, 100, 100, 0.2);
+        }
+        .toggle-wrap {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .toggle-btn {
+            flex: 1;
+            padding: 9px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            font-size: 12px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .toggle-btn:hover { background: rgba(var(--primary-rgb), 0.1); }
+        .custom-list { max-height: 200px; overflow-y: auto; scrollbar-width: thin; }
+        .custom-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .custom-info { font-size: 13px; font-weight: 400; }
+        .del-btn {
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            border-radius: 4px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .del-btn:hover {
+            background: rgba(255, 100, 100, 0.3);
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .panel { width: 100%; right: -100%; }
+        }
