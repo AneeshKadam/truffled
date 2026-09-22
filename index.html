@@ -40,9 +40,9 @@
          </div>
       </div>
       <script src="js/cloak.js"></script>
-      <script src="/js/panic.js"></script>
-      <script src="/js/search.js"></script>
-      <script src="/js/mobile.js"></script>
+      <script src="js/panic.js"></script>
+      <script src="js/search.js"></script>
+      <script src="js/mobile.js"></script>
       <script>
             class GameLoader {
             constructor() {
@@ -72,7 +72,7 @@
             }
             async loadGames() {
                 try {
-                    const response = await fetch('/js/json/g.json');
+                    const response = await fetch('js/json/g.json');
                     if (!response.ok) throw new Error('g.json not found');
                     const data = await response.json();
                     this.games = data.games || [];
@@ -100,7 +100,7 @@
                 const shouldOpenDirectly = this.shouldOpenDirectly(url);
                 return shouldOpenDirectly ? url :
                     (frameType === 'unity' ? `/unityframe.html?url=${encodeURIComponent(url)}` :
-                    `/iframe.html?url=${encodeURIComponent(url)}`);
+                    `iframe.html?url=${encodeURIComponent(url)}`);
             }
             shouldOpenDirectly(url) {
                 return this.directOpenUrls.some(directUrl => url.includes(directUrl));
@@ -134,7 +134,7 @@
                 div.appendChild(this.createCardLink({
                     href: 'https://discord.com/channels/1400743472205398088/1412911144913604618',
                     name: 'Game Suggestions',
-                    thumbnail: '/png/games/forms.webp',
+                    thumbnail: 'png/games/forms.webp',
                     loading: 'eager'
                 }));
                 return div;
