@@ -102,7 +102,7 @@
                 return resolveSitePath(url);
             }
             getGameDestination(game) {
-               return this.getGameUrl(game);
+               return "./game.html?url=" + encodeURIComponent(this.getGameUrl(game));
             }
             shouldOpenDirectly(url) {
                 return this.directOpenUrls.some(directUrl => url.includes(directUrl));
