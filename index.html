@@ -23,12 +23,12 @@
    </head>
    <body>
       <div class="navbar-right">
-          <a href="/"><img src="png/house-solid.svg" alt="h"></a>
-          <a href="g"><img src="png/gamepad-solid.svg" alt="g"></a>
-          <a href="a"><img src="png/apps.svg" alt="a"></a>
-          <a href="t"><img src="png/tool.svg" alt="t"></a>
+          <a href="./"><img src="png/house-solid.svg" alt="h"></a>
+          <a href="./g"><img src="png/gamepad-solid.svg" alt="g"></a>
+          <a href="./a"><img src="png/apps.svg" alt="a"></a>
+          <a href="./t"><img src="png/tool.svg" alt="t"></a>
           <a href="https://discord.gg/vVqY36mzvj"><img src="png/other.svg" alt="d"></a>
-          <a href="s"><img src="png/gear-solid.svg" alt="s"></a>
+          <a href="./s"><img src="png/gear-solid.svg" alt="s"></a>
       </div>
       <div class="content">
          <h4>Games</h4>
@@ -44,6 +44,13 @@
       <script src="js/search.js"></script>
       <script src="js/mobile.js"></script>
       <script>
+            const siteRoot = "./";
+            const resolveSitePath = (value) => {
+                if (!value) return value;
+                if (/^(https?:|javascript:|data:|blob:|\/\/)/i.test(value)) return value;
+                return value.replace(/^\.\//, "").replace(/^\//, "");
+            };
+
             class GameLoader {
             constructor() {
                 this.games = [];
@@ -72,7 +79,7 @@
             }
             async loadGames() {
                 try {
-                    const response = await fetch('js/json/g.json');
+                    const response = await fetch('./js/json/g.json');
                     if (!response.ok) throw new Error('g.json not found');
                     const data = await response.json();
                     this.games = data.games || [];
@@ -91,8 +98,7 @@
                 if (typeof transformGameUrl === 'function') {
                     url = transformGameUrl(url);
                 }
-                
-                return url;
+                return resolveSitePath(url);
             }
             getGameDestination(game) {
                return this.getGameUrl(game);
@@ -101,15 +107,11 @@
                 return this.directOpenUrls.some(directUrl => url.includes(directUrl));
             }
             getFramePage(url) {
-                if (this.shouldOpenDirectly(url)) {
-                    return null; 
-                }
-                if (url.includes('/mobile.html?url=')) {
-                    return '/iframe.html';
-                }            
+                if (this.shouldOpenDirectly(url)) return null;
+                if (url.includes('/mobile.html?url=')) return './iframe.html';
                 const game = this.games.find(g => url.includes(g.url.split('?')[0]));
                 const frameType = game?.frameType || 'iframe';
-                return frameType === 'unity' ? '/unityframe.html' : '/iframe.html';
+                return frameType === 'unity' ? './unityframe.html' : './iframe.html';
             }
             renderGames() {
                 const gallery = document.getElementById('gameGallery');
@@ -117,10 +119,7 @@
                 gallery.innerHTML = '';
                 gallery.appendChild(this.createGameSuggestionCard());
                 gallery.appendChild(this.createRandomGameCard());
-                this.games.forEach((game, index) => {
-                    const gameCard = this.createGameCard(game, index);
-                    gallery.appendChild(gameCard);
-                });
+                this.games.forEach((game, index) => gallery.appendChild(this.createGameCard(game, index)));
             }
             createGameSuggestionCard() {
                 const div = document.createElement('div');
@@ -153,13 +152,12 @@
                 div.className = 'game';
                 div.setAttribute('data-name', game.name);
                 div.dataset.searchNames = [game.name, ...(game.altNames || [])].join('\n').toLowerCase();
-                const loadingAttr = 'eager';
                 div.appendChild(this.createCardLink({
                     href: this.getGameDestination(game),
                     name: game.name,
-                    thumbnail: game.thumbnail,
+                    thumbnail: resolveSitePath(game.thumbnail),
                     mediaType: game.mediaType,
-                    loading: loadingAttr
+                    loading: 'eager'
                 }));
                 return div;
             }
@@ -171,7 +169,7 @@
                 let media;
                 if (mediaType === 'video') {
                     media = document.createElement('video');
-                    media.src = thumbnail;
+                    media.src = resolveSitePath(thumbnail);
                     media.autoplay = true;
                     media.muted = true;
                     media.loop = true;
@@ -179,14 +177,14 @@
                     media.preload = loading === 'eager' ? 'auto' : 'metadata';
                 } else {
                     media = document.createElement('img');
-                    media.src = thumbnail;
+                    media.src = resolveSitePath(thumbnail);
                     media.alt = name;
                     media.loading = loading;
                     media.decoding = 'async';
                     media.addEventListener('error', () => {
                         if (media.dataset.fallbackApplied === 'true') return;
                         media.dataset.fallbackApplied = 'true';
-                        media.src = '/png/logo.png';
+                        media.src = resolveSitePath('png/logo.png');
                     });
                 }
                 media.className = 'game-thumbnail';
@@ -197,7 +195,6 @@
                 const searchInput = document.getElementById('searchInput');
                 const autocomplete = document.getElementById('autocomplete');
                 if (!searchInput || !autocomplete) return;
-                
                 searchInput.addEventListener('input', (e) => {
                     const filter = e.target.value.toLowerCase().trim();
                     if (!filter) {
@@ -210,15 +207,10 @@
                     this.updateGameCount(matches.length);
                 });
                 searchInput.addEventListener('focus', () => {
-                    if (!searchInput.value.trim()) {
-                        const popularMatches = this.getPopularGames();
-                        this.showSuggestions(popularMatches, autocomplete);
-                    }
+                    if (!searchInput.value.trim()) this.showSuggestions(this.getPopularGames(), autocomplete);
                 });
                 document.addEventListener('click', (e) => {
-                    if (!autocomplete.contains(e.target) && e.target !== searchInput) {
-                        this.hideSuggestions(autocomplete);
-                    }
+                    if (!autocomplete.contains(e.target) && e.target !== searchInput) this.hideSuggestions(autocomplete);
                 });
             }
             findMatches(filter) {
@@ -228,9 +220,7 @@
                 });
             }
             getPopularGames() {
-                return this.games.filter(game => 
-                    this.popularGames.includes(game.name)
-                );
+                return this.games.filter(game => this.popularGames.includes(game.name));
             }
             showSuggestions(matches, autocomplete) {
                 autocomplete.innerHTML = '';
@@ -238,20 +228,17 @@
                     matches.forEach((match) => {
                         const item = document.createElement('div');
                         item.className = 'autocomplete-item';
-                        
                         const thumbnail = document.createElement('img');
-                        thumbnail.src = match.thumbnail;
+                        thumbnail.src = resolveSitePath(match.thumbnail);
                         thumbnail.alt = match.name;
                         thumbnail.loading = 'lazy';
                         thumbnail.addEventListener('error', () => {
                             if (thumbnail.dataset.fallbackApplied === 'true') return;
                             thumbnail.dataset.fallbackApplied = 'true';
-                            thumbnail.src = '/png/logo.png';
+                            thumbnail.src = resolveSitePath('png/logo.png');
                         });
-
                         const label = document.createElement('span');
                         label.textContent = match.name;
-
                         item.appendChild(thumbnail);
                         item.appendChild(label);
                         item.onclick = () => this.selectSuggestedGame(match, autocomplete);
@@ -269,36 +256,24 @@
             selectSuggestedGame(game, autocomplete) {
                 if (!game) return;
                 const searchInput = document.getElementById('searchInput');
-                if (searchInput) {
-                    searchInput.value = game.name;
-                }
+                if (searchInput) searchInput.value = game.name;
                 this.hideSuggestions(autocomplete);
                 this.updateGameCount(1);
             }
             updateGameCount(count = null) {
                 const searchCount = document.getElementById('searchCount');
                 if (!searchCount) return;
-                if (count === null) {
-                    searchCount.textContent = `Showing all ${this.totalGames} games`;
-                } else {
-                    const label = count === 1 ? 'match' : 'matches';
-                    searchCount.textContent = `Found ${count} ${label} in ${this.totalGames} games`;
-                }
+                if (count === null) searchCount.textContent = `Showing all ${this.totalGames} games`;
+                else searchCount.textContent = `Found ${count} ${count === 1 ? 'match' : 'matches'} in ${this.totalGames} games`;
             }
             pickRandomGame() {
                 if (this.games.length === 0) return;
-                const randomGame = this.games[Math.floor(Math.random() * this.games.length)];       
+                const randomGame = this.games[Math.floor(Math.random() * this.games.length)];
                 window.location.href = this.getGameDestination(randomGame);
             }
             showError(message) {
                 const gallery = document.getElementById('gameGallery');
-                if (gallery) {
-                    gallery.innerHTML = `
-                        <div style="color: white; text-align: center; padding: 2rem; width: 100%;">
-                        <p>${message}</p>
-                        </div>
-                    `;
-                }
+                if (gallery) gallery.innerHTML = `<div style="color: white; text-align: center; padding: 2rem; width: 100%;"><p>${message}</p></div>`;
             }
             }
             document.addEventListener('DOMContentLoaded', () => {
@@ -309,5 +284,3 @@
       </script>
    </body>
 </html>
-
-
